@@ -7,6 +7,6 @@ const analyzeData = (firstPath, secondPath) => {
   const realSecondPath = fs.realpathSync(secondPath);
   const firstFileData = JSON.parse(fs.readFileSync(realFirstPath).toString());
   const secondFileData = JSON.parse(fs.readFileSync(realSecondPath).toString());
-  console.log(determineDifference(firstFileData, secondFileData));
+  return determineDifference(firstFileData, secondFileData);
 };
 export default analyzeData;
