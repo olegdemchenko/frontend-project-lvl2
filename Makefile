@@ -7,4 +7,6 @@ publish:
 lint:
 	npx eslint .
 test:
-	npx babel-node src/workbook.js
+	npm test
+test-coverage:
+	npm test -- --coverage
