@@ -1,12 +1,17 @@
-import determineDifference from './determineDifference';
-
 const fs = require('fs');
+const path = require('path');
 
 const analyzeData = (firstPath, secondPath) => {
-  const realFirstPath = fs.realpathSync(firstPath);
-  const realSecondPath = fs.realpathSync(secondPath);
-  const firstFileData = JSON.parse(fs.readFileSync(realFirstPath).toString());
-  const secondFileData = JSON.parse(fs.readFileSync(realSecondPath).toString());
-  return determineDifference(firstFileData, secondFileData);
+  const firstFile = fs.readFileSync(fs.realpathSync(firstPath), 'utf8');
+  const secondFile = fs.readFileSync(fs.realpathSync(secondPath), 'utf8');
+  const firstFileType = path.extname(firstPath);
+  const secondFileType = path.extname(secondPath);
+  return {
+    firstFile,
+    firstFileType,
+    secondFile,
+    secondFileType,
+  };
 };
+
 export default analyzeData;
