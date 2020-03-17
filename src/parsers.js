@@ -1,10 +1,25 @@
+import fixNumbers from './fixNumbers';
+
 const jsYaml = require('js-yaml');
 const ini = require('ini');
 
-const parsers = {
-  '.json': (file) => JSON.parse(file),
-  '.yml': (file) => jsYaml.safeLoad(file),
-  '.yaml': (file) => jsYaml.safeLoad(file),
-  '.ini': (file) => ini.parse(file),
+
+export default (type, file) => {
+  switch (type) {
+    case '.json': {
+      return JSON.parse(file);
+    }
+    case '.yml': {
+      return jsYaml.safeLoad(file);
+    }
+    case '.yaml': {
+      return jsYaml.safeLoad(file);
+    }
+    case '.ini': {
+      const parcedFile = ini.parse(file);
+      return fixNumbers(parcedFile);
+    }
+    default:
+      throw new Error('This format is not supported');
+  }
 };
-export default (type, file) => parsers[type](file);

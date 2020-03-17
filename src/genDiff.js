@@ -1,9 +1,9 @@
 import analyzeData from './analyzeData';
 import findDifferences from './findDifferences';
 import parse from './parsers';
-import stringify from './stringify';
+import format from './formatters';
 
-const genDiff = (firstPath, secondPath) => {
+const genDiff = (firstPath, secondPath, typeFormatting = 'stringify') => {
   const {
     firstFile,
     firstFileType,
@@ -13,6 +13,6 @@ const genDiff = (firstPath, secondPath) => {
   const parcedFirstFile = parse(firstFileType, firstFile);
   const parcedSecondFile = parse(secondFileType, secondFile);
   const diff = findDifferences(parcedFirstFile, parcedSecondFile);
-  return stringify(diff);
+  return format(typeFormatting, diff);
 };
 export default genDiff;

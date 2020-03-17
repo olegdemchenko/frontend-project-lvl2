@@ -1,23 +1,23 @@
 const _ = require('lodash');
 
-const findDifferences = (data1, data2) => {
-  const commonKeys = _.intersection(Object.keys(data1), Object.keys(data2));
-  const uniqueKeysData1 = _.difference(Object.keys(data1), Object.keys(data2));
-  const uniqueKeysData2 = _.difference(Object.keys(data2), Object.keys(data1));
-  const difference = [...commonKeys, ...uniqueKeysData1, ...uniqueKeysData2].reduce((acc, key) => {
-    if (_.has(data1, key) && _.has(data2, key)) {
-      if (typeof data1[key] === 'object' && typeof data2[key] === 'object') {
-        return { ...acc, [key]: { ...findDifferences(data1[key], data2[key]) } };
+const findDifferences = (before, after) => {
+  const commonKeys = _.intersection(Object.keys(before), Object.keys(after));
+  const uniqueKeysBefore = _.difference(Object.keys(before), Object.keys(after));
+  const uniqueKeysAfter = _.difference(Object.keys(after), Object.keys(before));
+  const difference = [...commonKeys, ...uniqueKeysBefore, ...uniqueKeysAfter].reduce((acc, key) => {
+    if (_.has(before, key) && _.has(after, key)) {
+      if (typeof before[key] === 'object' && typeof after[key] === 'object') {
+        return { ...acc, [key]: { ...findDifferences(before[key], after[key]) } };
       }
-      if (data1[key] === data2[key]) {
-        return { ...acc, [key]: data1[key] };
+      if (before[key] === after[key]) {
+        return { ...acc, [key]: before[key] };
       }
-      return { ...acc, [`- ${key}`]: data1[key], [`+ ${key}`]: data2[key] };
+      return { ...acc, [`- ${key}`]: before[key], [`+ ${key}`]: after[key] };
     }
-    if (_.has(data1, key) && !_.has(data2, key)) {
-      return { ...acc, [`- ${key}`]: data1[key] };
+    if (_.has(before, key) && !_.has(after, key)) {
+      return { ...acc, [`- ${key}`]: before[key] };
     }
-    return { ...acc, [`+ ${key}`]: data2[key] };
+    return { ...acc, [`+ ${key}`]: after[key] };
   }, {});
   return difference;
 };
