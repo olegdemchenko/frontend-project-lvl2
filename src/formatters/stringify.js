@@ -1,14 +1,13 @@
+import isObject from '../utils';
 
 const stringify = (diff) => (
-  Object.entries(diff).reduce((acc, [key, value]) => {
-    if (typeof value === 'object') {
-      const newAcc = stringify(value);
+  diff.reduce((acc, [key, value]) => {
+    if (isObject(value)) {
+      const newAcc = Array.isArray(value) ? stringify(value) : stringify(Object.entries(value));
       const newStr = `${key}: { ${newAcc.join(', ')} }`;
-      acc.push(newStr);
-      return acc;
+      return [...acc, newStr];
     }
-    acc.push(`${key}: ${value}`);
-    return acc;
+    return [...acc, `${key}: ${value}`];
   }, [])
 );
 export default (data) => stringify(data).join(', ');

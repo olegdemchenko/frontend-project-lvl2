@@ -1,27 +1,25 @@
-import _ from 'lodash';
+import isObject from '../utils';
 
 const parseNameOfProperty = (key) => {
   const status = key[0];
-  let propertyName;
   if (status === '+' || status === '-') {
-    propertyName = key.slice(2);
-  } else {
-    propertyName = key;
+    return [status, key.slice(2)];
   }
-  return [status, propertyName];
+  return [status, key];
 };
-const toString = (arg) => (typeof arg === 'object' ? '[complex value]' : `"${arg.toString()}"`);
+const toString = (arg) => (isObject(arg) ? '[complex value]' : `"${arg.toString()}"`);
 const plain = (diff, path = '') => (
-  Object.entries(diff).reduce((acc, [key, value]) => {
+  diff.reduce((acc, [key, value]) => {
     const [status, propertyName] = parseNameOfProperty(key);
     const fullPath = `${path}${propertyName}`;
-    const valueType = typeof value;
-    const propertyChanged = (status === '-' && _.has(diff, `+ ${propertyName}`));
-    const propertyRemoved = (status === '-' && !_.has(diff, `+ ${propertyName}`));
-    const propertyAdded = (status === '+' && !_.has(diff, `- ${propertyName}`));
-    const propertyWithComplexValue = (status !== '+' && status !== '-' && valueType === 'object');
+    const hasNewProperty = ([property]) => property === `+ ${propertyName}`;
+    const hasOldProperty = ([property]) => property === `- ${propertyName}`;
+    const propertyChanged = (status === '-' && diff.some(hasNewProperty));
+    const propertyRemoved = (status === '-' && !diff.some(hasNewProperty));
+    const propertyAdded = (status === '+' && !diff.some(hasOldProperty));
+    const propertyWithComplexValue = (status !== '+' && status !== '-' && Array.isArray(value));
     if (propertyChanged) {
-      acc.push(`Property "${fullPath}" was changed from ${toString(value)} to ${toString(diff[`+ ${propertyName}`])}`);
+      acc.push(`Property "${fullPath}" was changed from ${toString(value)} to ${toString(diff.find(hasNewProperty)[1])}`);
     }
     if (propertyRemoved) {
       acc.push(`Property "${fullPath}" was deleted`);

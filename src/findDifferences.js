@@ -1,3 +1,5 @@
+import isObject from './utils';
+
 const _ = require('lodash');
 
 const findDifferences = (before, after) => {
@@ -6,19 +8,19 @@ const findDifferences = (before, after) => {
   const uniqueKeysAfter = _.difference(Object.keys(after), Object.keys(before));
   const difference = [...commonKeys, ...uniqueKeysBefore, ...uniqueKeysAfter].reduce((acc, key) => {
     if (_.has(before, key) && _.has(after, key)) {
-      if (typeof before[key] === 'object' && typeof after[key] === 'object') {
-        return { ...acc, [key]: { ...findDifferences(before[key], after[key]) } };
+      if (isObject(before[key]) && isObject(after[key])) {
+        return [...acc, [key, [...findDifferences(before[key], after[key])]]];
       }
       if (before[key] === after[key]) {
-        return { ...acc, [key]: before[key] };
+        return [...acc, [key, before[key]]];
       }
-      return { ...acc, [`- ${key}`]: before[key], [`+ ${key}`]: after[key] };
+      return [...acc, [`- ${key}`, before[key]], [`+ ${key}`, after[key]]];
     }
     if (_.has(before, key) && !_.has(after, key)) {
-      return { ...acc, [`- ${key}`]: before[key] };
+      return [...acc, [`- ${key}`, before[key]]];
     }
-    return { ...acc, [`+ ${key}`]: after[key] };
-  }, {});
+    return [...acc, [`+ ${key}`, after[key]]];
+  }, []);
   return difference;
 };
 export default findDifferences;

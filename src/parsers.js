@@ -20,6 +20,6 @@ export default (type, file) => {
       return fixNumbers(parcedFile);
     }
     default:
-      throw new Error('This format is not supported');
+      throw new Error(`Type ${type} is not supported`);
   }
 };

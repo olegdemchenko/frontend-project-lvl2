@@ -2,15 +2,15 @@ import stringify from './stringify';
 import plain from './plain';
 
 
-export default (typeFormatting, obj) => {
+export default (typeFormatting, diff) => {
   switch (typeFormatting) {
     case 'stringify':
-      return stringify(obj);
+      return stringify(diff);
     case 'plain':
-      return plain(obj);
+      return plain(diff);
     case 'json':
-      return JSON.stringify(obj);
+      return JSON.stringify(diff);
     default:
-      throw new Error('This format is not supported');
+      throw new Error(`Format ${typeFormatting} is not supported`);
   }
 };
