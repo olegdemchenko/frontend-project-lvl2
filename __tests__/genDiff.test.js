@@ -37,8 +37,8 @@ test.each([
 });
 test.each([
   [
-    getFilePath('before.json'),
-    getFilePath('after.yml'),
+    getFilePath('before.yml'),
+    getFilePath('after.json'),
     readFile('plainTemplate.txt'),
   ],
   [

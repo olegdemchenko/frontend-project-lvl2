@@ -1,10 +1,13 @@
+import isObject from './utils';
+
 const fixNumbers = (obj) => (
   Object.entries(obj).reduce((acc, [key, value]) => {
-    if (typeof value === 'object') {
+    const convertedValue = parseFloat(value);
+    if (isObject(value)) {
       return { ...acc, [key]: fixNumbers(value) };
     }
-    if (typeof value === 'string' && !Number.isNaN(Number(value))) {
-      return { ...acc, [key]: Number(value) };
+    if (convertedValue) {
+      return { ...acc, [key]: convertedValue };
     }
     return { ...acc, [key]: value };
   }, {})
