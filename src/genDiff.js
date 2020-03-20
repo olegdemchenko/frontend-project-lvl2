@@ -1,4 +1,4 @@
-import findDifferences from './findDifferences';
+import findDifference from './findDifference';
 import parse from './parsers';
 import format from './formatters';
 
@@ -12,7 +12,7 @@ const genDiff = (firstPath, secondPath, typeFormatting = 'stringify') => {
   const secondFile = fs.readFileSync(fs.realpathSync(secondPath), 'utf8');
   const secondFileType = path.extname(secondPath);
   const parcedSecondFile = parse(secondFileType, secondFile);
-  const diff = findDifferences(parcedFirstFile, parcedSecondFile);
+  const diff = findDifference(parcedFirstFile, parcedSecondFile);
   return format(typeFormatting, diff);
 };
 export default genDiff;
