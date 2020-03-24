@@ -31,18 +31,3 @@ const findDifferences = (before, after) => (
   }, [])
 );
 export default findDifferences;
-/*
-const valuesNotEqual = before[key] !== after[key];
-    const beforeHasntKey = !_.has(before, key) && _.has(after, key);
-    const afterHasntKey = _.has(before, key) && !_.has(after, key);
-    if (beforeHasntKey) {
-      return [...acc, [`+ ${key}`, after[key]]];
-    }
-    if (afterHasntKey) {
-      return [...acc, [`- ${key}`, before[key]]];
-    }
-    if (valuesNotEqual) {
-      return [...acc, [`- ${key}`, before[key]], [`+ ${key}`, after[key]]];
-    }
-    return [...acc, [`  ${key}`, before[key]]];
-    */
