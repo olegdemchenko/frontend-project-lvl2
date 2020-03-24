@@ -1,13 +1,14 @@
 import isObject from '../utils';
 
-const stringify = (diff) => (
+const stringify = (diff, spaces = '') => (
   diff.reduce((acc, [key, value]) => {
+    const newSpaces = `${spaces}  `;
     if (isObject(value)) {
-      const newAcc = Array.isArray(value) ? stringify(value) : stringify(Object.entries(value));
-      const newStr = `${key}: { ${newAcc.join(', ')} }`;
+      const newAcc = Array.isArray(value) ? stringify(value, `${newSpaces}  `) : stringify(Object.entries(value), `${newSpaces}    `);
+      const newStr = `${newSpaces}${key}: {\n${newAcc.join('')}${newSpaces}  }\n`;
       return [...acc, newStr];
     }
-    return [...acc, `${key}: ${value}`];
+    return [...acc, `${newSpaces}${key}: ${value}\n`];
   }, [])
 );
-export default (data) => stringify(data).join(', ');
+export default (data) => `{\n${stringify(data).join('')}}`;

@@ -1,9 +1,9 @@
+import path from 'path';
+import fs from 'fs';
 import findDifference from './findDifference';
 import parse from './parsers';
 import format from './formatters';
 
-const fs = require('fs');
-const path = require('path');
 
 const genDiff = (firstPath, secondPath, typeFormatting = 'stringify') => {
   const firstFile = fs.readFileSync(fs.realpathSync(firstPath), 'utf8');

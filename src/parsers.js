@@ -1,8 +1,6 @@
+import jsYaml from 'js-yaml';
+import ini from 'ini';
 import fixNumbers from './fixNumbers';
-
-const jsYaml = require('js-yaml');
-const ini = require('ini');
-
 
 export default (type, file) => {
   switch (type) {

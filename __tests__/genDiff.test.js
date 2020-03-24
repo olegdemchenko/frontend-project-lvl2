@@ -1,75 +1,70 @@
-import genDiff from '../src/genDiff';
+import path from 'path';
+import fs from 'fs';
+import genDiff from '../src/bin';
 
-const path = require('path');
-const fs = require('fs');
-
-const getFilePath = (fileName) => path.join(__dirname, '/../', '__fixtures__/', fileName);
+const fixturesPath = `${__dirname}/../__fixtures__/`;
+const getFilePath = (fileName) => path.join(fixturesPath, fileName);
 const readFile = (fileName) => fs.readFileSync(getFilePath(fileName), 'utf-8').trim();
+let stringTemplate;
+let emptyBeforeTemplate;
+let plainTemplate;
+let emptyBeforePlainTemplate;
+let jsonTemplate;
+
+beforeAll(() => {
+  stringTemplate = readFile('stringTemplate.txt');
+  emptyBeforeTemplate = readFile('emptyBeforeTemplate.txt');
+  plainTemplate = readFile('plainTemplate.txt');
+  emptyBeforePlainTemplate = readFile('emptyBeforePlainTemplate.txt');
+  jsonTemplate = readFile('jsonTemplate.txt');
+});
 
 test.each([
   [
-    getFilePath('before.json'),
-    getFilePath('after.json'),
-    readFile('stringTemplate.txt'),
+    'before.json',
+    'after.json',
   ],
   [
-    getFilePath('emptyBefore.json'),
-    getFilePath('after.json'),
-    readFile('emptyBeforeTemplate.txt'),
+    'before.yml',
+    'after.yml',
   ],
   [
-    getFilePath('emptyBefore.json'),
-    getFilePath('emptyAfter.json'),
-    '',
+    'before.ini',
+    'after.ini',
   ],
-  [
-    getFilePath('before.yml'),
-    getFilePath('after.yml'),
-    readFile('stringTemplate.txt'),
-  ],
-  [
-    getFilePath('before.ini'),
-    getFilePath('after.ini'),
-    readFile('stringTemplate.txt'),
-  ],
-])('testing with string format', (a, b, expected) => {
-  expect(genDiff(a, b)).toBe(expected);
+])('testing string format ', (a, b) => {
+  expect(genDiff(`${fixturesPath}${a}`, `${fixturesPath}${b}`)).toBe(stringTemplate);
 });
 test.each([
   [
-    getFilePath('before.yml'),
-    getFilePath('after.json'),
-    readFile('plainTemplate.txt'),
+    'before.yml',
+    'after.json',
   ],
   [
-    getFilePath('emptyBefore.json'),
-    getFilePath('after.ini'),
-    readFile('emptyBeforePlainTemplate.txt'),
+    'before.ini',
+    'after.json',
   ],
-  [
-    getFilePath('before.ini'),
-    getFilePath('after.json'),
-    readFile('plainTemplate.txt'),
-  ],
-])('testing with plain format', (a, b, expected) => {
-  expect(genDiff(a, b, 'plain')).toBe(expected);
+])('testing with plain format', (a, b) => {
+  expect(genDiff(`${fixturesPath}${a}`, `${fixturesPath}${b}`, 'plain')).toBe(plainTemplate);
 });
 test.each([
   [
-    getFilePath('before.json'),
-    getFilePath('after.yml'),
-    readFile('jsonTemplate.txt'),
+    'before.json',
+    'after.yml',
   ],
   [
-    getFilePath('before.yml'),
-    getFilePath('after.ini'),
-    readFile('jsonTemplate.txt'),
+    'before.yml',
+    'after.ini',
   ],
   [
-    getFilePath('before.ini'),
-    getFilePath('after.json'),
-    readFile('jsonTemplate.txt'),
+    'before.ini',
+    'after.json',
   ],
-])('testing with json format', (a, b, expected) => {
-  expect(genDiff(a, b, 'json')).toBe(expected);
+])('testing with json format', (a, b) => {
+  expect(genDiff(`${fixturesPath}${a}`, `${fixturesPath}${b}`, 'json')).toBe(jsonTemplate);
+});
+test('testing empty files', () => {
+  expect(genDiff(`${fixturesPath}emptyBefore.json`, `${fixturesPath}emptyAfter.json`)).toBe('{\n}');
+  expect(genDiff(`${fixturesPath}emptyBefore.json`, `${fixturesPath}after.json`)).toBe(emptyBeforeTemplate);
+  expect(genDiff(`${fixturesPath}emptyBefore.json`, `${fixturesPath}after.json`, 'plain')).toBe(emptyBeforePlainTemplate);
 });

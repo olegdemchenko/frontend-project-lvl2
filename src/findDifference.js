@@ -1,6 +1,5 @@
+import _ from 'lodash';
 import isObject from './utils';
-
-const _ = require('lodash');
 
 const analyzeData = (before, after) => {
   const commonKeys = _.intersection(Object.keys(before), Object.keys(after));
@@ -8,30 +7,42 @@ const analyzeData = (before, after) => {
   const uniqueKeysAfter = _.difference(Object.keys(after), Object.keys(before));
   return [...commonKeys, ...uniqueKeysBefore, ...uniqueKeysAfter];
 };
-
+const getPrimitiveResult = (key, beforeValue, afterValue) => {
+  switch (true) {
+    case !beforeValue:
+      return [[`+ ${key}`, afterValue]];
+    case !afterValue:
+      return [[`- ${key}`, beforeValue]];
+    case beforeValue !== afterValue:
+      return [[`- ${key}`, beforeValue], [`+ ${key}`, afterValue]];
+    case beforeValue === afterValue:
+      return [[`${key}`, beforeValue]];
+    default:
+      throw new Error('Mistake!!!!');
+  }
+};
 const findDifferences = (before, after) => (
   [...analyzeData(before, after)].reduce((acc, key) => {
-    const bothObjects = (
-      _.has(before, key)
-      && _.has(after, key)
-      && isObject(before[key])
-      && isObject(after[key]));
-    const valuesNotEqual = _.has(before, key) && _.has(after, key) && before[key] !== after[key];
+    const bothObjects = isObject(before[key]) && isObject(after[key]);
+    if (bothObjects) {
+      return [...acc, [`${key}`, findDifferences(before[key], after[key])]];
+    }
+    return [...acc, ...getPrimitiveResult(key, before[key], after[key])];
+  }, [])
+);
+export default findDifferences;
+/*
+const valuesNotEqual = before[key] !== after[key];
     const beforeHasntKey = !_.has(before, key) && _.has(after, key);
     const afterHasntKey = _.has(before, key) && !_.has(after, key);
-    if (bothObjects) {
-      return [...acc, [key, findDifferences(before[key], after[key])]];
-    }
-    if (valuesNotEqual) {
-      return [...acc, [`- ${key}`, before[key]], [`+ ${key}`, after[key]]];
-    }
     if (beforeHasntKey) {
       return [...acc, [`+ ${key}`, after[key]]];
     }
     if (afterHasntKey) {
       return [...acc, [`- ${key}`, before[key]]];
     }
-    return [...acc, [key, before[key]]];
-  }, [])
-);
-export default findDifferences;
+    if (valuesNotEqual) {
+      return [...acc, [`- ${key}`, before[key]], [`+ ${key}`, after[key]]];
+    }
+    return [...acc, [`  ${key}`, before[key]]];
+    */

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
+import programm from 'commander';
 import genDiff from '../genDiff';
-
-const programm = require('commander');
 
 programm.version('1.0.0')
   .description('Compares two configuration files and shows a difference.')
