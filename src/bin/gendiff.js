@@ -10,4 +10,3 @@ programm.version('1.0.0')
     console.log(genDiff(firstConfig, secondConfig, programm.format))
   ))
   .parse(process.argv);
-export default genDiff;

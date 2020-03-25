@@ -1,12 +1,12 @@
 {
-  common: {
-      setting1: Value 1
+    common: {
+        setting1: Value 1
       - setting3: true
       + setting3: {
             key: value
         }
-      setting6: {
-          key: value
+        setting6: {
+            key: value
           + ops: vops
         }
       - setting2: 200
@@ -16,10 +16,10 @@
             key5: value5
         }
     }
-  group1: {
+    group1: {
       - baz: bas
       + baz: bars
-      foo: bar
+        foo: bar
       - nest: {
             key: value
         }

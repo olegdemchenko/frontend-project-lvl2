@@ -1,39 +1,52 @@
-import isObject from '../utils';
+import _ from 'lodash';
 
 const parseNameOfProperty = (key) => {
   const status = key[0];
-  if (status === '+' || status === '-') {
-    return [status, key.slice(2)];
+  const propertyName = key.slice(2);
+  switch (status) {
+    case '+':
+      return { propertyName, added: true };
+    case '-':
+      return { propertyName, removed: true };
+    default:
+      return { propertyName, notChanged: true };
   }
-  return [status, key];
 };
-const toString = (arg) => (isObject(arg) ? '[complex value]' : `"${arg.toString()}"`);
+const findChangedProperty = (propertyName, status, diff) => {
+  if (status.added) {
+    return diff.find(([property]) => property === `- ${propertyName}`);
+  }
+  if (status.removed) {
+    return diff.find(([property]) => property === `+ ${propertyName}`);
+  }
+  return null;
+};
+const toString = (arg) => (_.isObject(arg) ? '[complex value]' : `"${arg.toString()}"`);
+
 const plain = (diff, path = '') => (
   diff.reduce((acc, [key, value]) => {
-    const [status, propertyName] = parseNameOfProperty(key);
+    const { propertyName, ...status } = parseNameOfProperty(key);
     const fullPath = `${path}${propertyName}`;
-    const hasNewProperty = ([property]) => property === `+ ${propertyName}`;
-    const hasOldProperty = ([property]) => property === `- ${propertyName}`;
-    const propertyChanged = (status === '-' && diff.some(hasNewProperty));
-    const propertyRemoved = (status === '-' && !diff.some(hasNewProperty));
-    const propertyAdded = (status === '+' && !diff.some(hasOldProperty));
-    const propertyWithComplexValue = (status !== '+' && status !== '-' && Array.isArray(value));
-    if (propertyChanged) {
-      acc.push(`Property "${fullPath}" was changed from ${toString(value)} to ${toString(diff.find(hasNewProperty)[1])}`);
-    }
-    if (propertyRemoved) {
-      acc.push(`Property "${fullPath}" was deleted`);
-    }
-    if (propertyAdded) {
-      acc.push(`Property "${fullPath}" was added with value ${toString(value)}`);
-    }
-    if (propertyWithComplexValue) {
+    if (status.notChanged && Array.isArray(value)) {
       const newPath = `${fullPath}.`;
       const complexValueAcc = plain(value, newPath);
       const newAcc = acc.concat(complexValueAcc);
       return newAcc;
     }
+    const changedProperty = findChangedProperty(propertyName, status, diff);
+    if (status.removed && changedProperty) {
+      const str = `Property "${fullPath}" was changed from ${toString(value)} to ${toString(changedProperty[1])}`;
+      return [...acc, str];
+    }
+    if (status.removed) {
+      const str = `Property "${fullPath}" was deleted`;
+      return [...acc, str];
+    }
+    if (status.added && !changedProperty) {
+      const str = `Property "${fullPath}" was added with value ${toString(value)}`;
+      return [...acc, str];
+    }
     return acc;
   }, [])
 );
-export default (data) => plain(data).join('\n');
+export default (diff) => plain(diff).join('\n');

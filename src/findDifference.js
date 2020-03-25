@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import isObject from './utils';
 
 const analyzeData = (before, after) => {
   const commonKeys = _.intersection(Object.keys(before), Object.keys(after));
@@ -16,16 +15,16 @@ const getPrimitiveResult = (key, beforeValue, afterValue) => {
     case beforeValue !== afterValue:
       return [[`- ${key}`, beforeValue], [`+ ${key}`, afterValue]];
     case beforeValue === afterValue:
-      return [[`${key}`, beforeValue]];
+      return [[`  ${key}`, beforeValue]];
     default:
       throw new Error('Mistake!!!!');
   }
 };
 const findDifferences = (before, after) => (
   [...analyzeData(before, after)].reduce((acc, key) => {
-    const bothObjects = isObject(before[key]) && isObject(after[key]);
+    const bothObjects = _.isObject(before[key]) && _.isObject(after[key]);
     if (bothObjects) {
-      return [...acc, [`${key}`, findDifferences(before[key], after[key])]];
+      return [...acc, [`  ${key}`, findDifferences(before[key], after[key])]];
     }
     return [...acc, ...getPrimitiveResult(key, before[key], after[key])];
   }, [])

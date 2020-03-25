@@ -2,9 +2,9 @@
   "name": "gendiff",
   "version": "1.0.0",
   "description": "My second project with Hexlet",
-  "main": "dist/bin/index.js",
+  "main": "dist/index.js",
   "bin": {
-    "gendiff": "dist/bin/index.js"
+    "gendiff": "dist/bin/gendiff.js"
   },
   "scripts": {
     "test": "jest",

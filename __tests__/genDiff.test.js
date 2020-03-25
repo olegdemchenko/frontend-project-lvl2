@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import genDiff from '../src/bin';
+import genDiff from '../src';
 
 const fixturesPath = `${__dirname}/../__fixtures__/`;
 const getFilePath = (fileName) => path.join(fixturesPath, fileName);
@@ -41,8 +41,8 @@ test.each([
     'after.json',
   ],
   [
-    'before.ini',
-    'after.json',
+    'before.json',
+    'after.ini',
   ],
 ])('testing with plain format', (a, b) => {
   expect(genDiff(`${fixturesPath}${a}`, `${fixturesPath}${b}`, 'plain')).toBe(plainTemplate);
