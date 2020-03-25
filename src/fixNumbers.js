@@ -1,9 +1,9 @@
-import isObject from './utils';
+import _ from 'lodash';
 
 const fixNumbers = (obj) => (
   Object.entries(obj).reduce((acc, [key, value]) => {
     const convertedValue = parseFloat(value);
-    if (isObject(value)) {
+    if (_.isObject(value)) {
       return { ...acc, [key]: fixNumbers(value) };
     }
     if (convertedValue) {
