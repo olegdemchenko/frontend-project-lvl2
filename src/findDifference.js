@@ -6,27 +6,27 @@ const analyzeData = (before, after) => {
   const uniqueKeysAfter = _.difference(Object.keys(after), Object.keys(before));
   return [...commonKeys, ...uniqueKeysBefore, ...uniqueKeysAfter];
 };
-const getPrimitiveResult = (key, beforeValue, afterValue) => {
-  switch (true) {
-    case !beforeValue:
-      return [[`+ ${key}`, afterValue]];
-    case !afterValue:
-      return [[`- ${key}`, beforeValue]];
-    case beforeValue !== afterValue:
-      return [[`- ${key}`, beforeValue], [`+ ${key}`, afterValue]];
-    case beforeValue === afterValue:
-      return [[`  ${key}`, beforeValue]];
-    default:
-      throw new Error('Mistake!!!!');
-  }
-};
-const findDifferences = (before, after) => (
+const findDifference = (before, after) => (
   [...analyzeData(before, after)].reduce((acc, key) => {
     const bothObjects = _.isObject(before[key]) && _.isObject(after[key]);
+    const props = { key };
+    const beforeValue = before[key];
+    const afterValue = after[key];
     if (bothObjects) {
-      return [...acc, [`  ${key}`, findDifferences(before[key], after[key])]];
+      return [...acc, { ...props, status: 'tree', children: [...findDifference(before[key], after[key])] }];
     }
-    return [...acc, ...getPrimitiveResult(key, before[key], after[key])];
+    if (!beforeValue) {
+      return [...acc, { ...props, status: 'added', value: afterValue }];
+    }
+    if (!afterValue) {
+      return [...acc, { ...props, status: 'deleted', value: beforeValue }];
+    }
+    if (beforeValue !== afterValue) {
+      return [...acc, {
+        ...props, status: 'changed', value: beforeValue, newValue: afterValue,
+      }];
+    }
+    return [...acc, { ...props, status: 'not changed', value: beforeValue }];
   }, [])
 );
-export default findDifferences;
+export default findDifference;

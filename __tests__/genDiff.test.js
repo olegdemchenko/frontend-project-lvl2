@@ -19,49 +19,11 @@ beforeAll(() => {
   jsonTemplate = readFile('jsonTemplate.txt');
 });
 
-test.each([
-  [
-    'before.json',
-    'after.json',
-  ],
-  [
-    'before.yml',
-    'after.yml',
-  ],
-  [
-    'before.ini',
-    'after.ini',
-  ],
-])('testing string format ', (a, b) => {
-  expect(genDiff(`${fixturesPath}${a}`, `${fixturesPath}${b}`)).toBe(stringTemplate);
-});
-test.each([
-  [
-    'before.yml',
-    'after.json',
-  ],
-  [
-    'before.json',
-    'after.ini',
-  ],
-])('testing with plain format', (a, b) => {
-  expect(genDiff(`${fixturesPath}${a}`, `${fixturesPath}${b}`, 'plain')).toBe(plainTemplate);
-});
-test.each([
-  [
-    'before.json',
-    'after.yml',
-  ],
-  [
-    'before.yml',
-    'after.ini',
-  ],
-  [
-    'before.ini',
-    'after.json',
-  ],
-])('testing with json format', (a, b) => {
-  expect(genDiff(`${fixturesPath}${a}`, `${fixturesPath}${b}`, 'json')).toBe(jsonTemplate);
+
+test('testing main functionality', () => {
+  expect(genDiff(`${fixturesPath}before.json`, `${fixturesPath}after.yml`)).toBe(stringTemplate);
+  expect(genDiff(`${fixturesPath}before.ini`, `${fixturesPath}after.json`, 'plain')).toBe(plainTemplate);
+  expect(genDiff(`${fixturesPath}before.yml`, `${fixturesPath}after.ini`, 'json')).toBe(jsonTemplate);
 });
 test('testing empty files', () => {
   expect(genDiff(`${fixturesPath}emptyBefore.json`, `${fixturesPath}emptyAfter.json`)).toBe('{\n}');

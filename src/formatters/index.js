@@ -1,13 +1,12 @@
-import stringify from './stringify';
-import plain from './plain';
-
+import convertToString from './convertToString';
+import convertToPlainString from './convertToPlainString';
 
 export default (typeFormatting, diff) => {
   switch (typeFormatting) {
-    case 'stringify':
-      return stringify(diff);
+    case 'string':
+      return convertToString(diff);
     case 'plain':
-      return plain(diff);
+      return convertToPlainString(diff);
     case 'json':
       return JSON.stringify(diff);
     default:
