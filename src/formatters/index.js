@@ -3,7 +3,7 @@ import convertToPlainString from './convertToPlainString';
 
 export default (typeFormatting, diff) => {
   switch (typeFormatting) {
-    case 'string':
+    case 'tap':
       return convertToString(diff);
     case 'plain':
       return convertToPlainString(diff);
