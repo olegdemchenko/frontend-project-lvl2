@@ -1,12 +1,12 @@
-import convertToString from './convertToString';
-import convertToPlainString from './convertToPlainString';
+import convertToTap from './convertToTap';
+import convertToPlain from './convertToPlain';
 
 export default (typeFormatting, diff) => {
   switch (typeFormatting) {
     case 'tap':
-      return convertToString(diff);
+      return convertToTap(diff);
     case 'plain':
-      return convertToPlainString(diff);
+      return convertToPlain(diff);
     case 'json':
       return JSON.stringify(diff);
     default:

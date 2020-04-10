@@ -2,20 +2,20 @@ import jsYaml from 'js-yaml';
 import ini from 'ini';
 import fixNumbers from './fixNumbers';
 
-export default (extension, data) => {
-  switch (extension) {
-    case '.json': {
+export default (format, data) => {
+  switch (format) {
+    case 'json': {
       return JSON.parse(data);
     }
-    case '.yaml':
-    case '.yml': {
+    case 'yaml':
+    case 'yml': {
       return jsYaml.safeLoad(data);
     }
-    case '.ini': {
-      const parsedFile = ini.parse(data);
-      return fixNumbers(parsedFile);
+    case 'ini': {
+      const convertedData = ini.parse(data);
+      return fixNumbers(convertedData);
     }
     default:
-      throw new Error(`Extension ${extension} is not supported`);
+      throw new Error(`Format ${format} is not supported`);
   }
 };
