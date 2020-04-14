@@ -1,37 +1,53 @@
 import _ from 'lodash';
 
-const toString = (value, spaces) => {
-  if (_.isObject(value)) {
-    const newSpaces = `${spaces}    `;
-    return `{\n${Object.entries(value).map(([key, val]) => {
-      if (_.isObject(val)) {
-        return `${newSpaces}${key}: ${toString(val, `${newSpaces}`)}\n`;
-      }
-      return `${newSpaces}${key}: ${val}\n`;
-    }).join('')}${spaces}}`;
-  }
-  return value;
+const getSpaces = (deep, backspace = 0) => {
+  const startCountOfSpaces = 4;
+  return ' '.repeat(startCountOfSpaces * deep - backspace);
 };
-const stringify = (diff, spaces = '  ') => (
+
+const stringify = (value, deep) => {
+  if (!_.isObject(value)) {
+    return value;
+  }
+
+  const backspace = -2;
+  const newSpaces = getSpaces(deep, backspace);
+  return `{\n${Object.entries(value).map(([key, val]) => {
+    if (_.isObject(val)) {
+      return `${newSpaces}  ${key}: ${stringify(val, deep + 1)}`;
+    }
+    return `${newSpaces}  ${key}: ${val}`;
+  }).join('\n')}\n${getSpaces(deep)}}`;
+};
+
+const format = (diff, deep = 1) => (
   diff.map(({
     key, status, value, newValue, children,
   }) => {
-    const newSpaces = `${spaces}  `;
-    const stringValue = toString(value, newSpaces);
-    if (children) {
-      const childrenStr = stringify(children, `${spaces}    `).join('');
-      return `${spaces}  ${key}: {\n${childrenStr}${spaces}  }\n`;
+    const backspace = 2;
+    const spaces = getSpaces(deep, backspace);
+    const stringValue = stringify(value, deep);
+    switch (status) {
+      case 'changed': {
+        return `${spaces}- ${key}: ${stringValue}\n${spaces}+ ${key}: ${stringify(newValue, deep)}`;
+      }
+      case 'added': {
+        return `${spaces}+ ${key}: ${stringValue}`;
+      }
+      case 'deleted': {
+        return `${spaces}- ${key}: ${stringValue}`;
+      }
+      case 'not changed': {
+        return `${spaces}  ${key}: ${stringValue}`;
+      }
+      case 'parent': {
+        const childrenStr = format(children, deep + 1).join('\n');
+        return `${spaces}  ${key}: {\n${childrenStr}\n${getSpaces(deep)}}`;
+      }
+      default: {
+        throw new Error(`Status ${status} is not supported`);
+      }
     }
-    if (status === 'changed') {
-      return `${spaces}- ${key}: ${stringValue}\n${spaces}+ ${key}: ${toString(newValue, newSpaces)}\n`;
-    }
-    if (status === 'added') {
-      return `${spaces}+ ${key}: ${stringValue}\n`;
-    }
-    if (status === 'deleted') {
-      return `${spaces}- ${key}: ${stringValue}\n`;
-    }
-    return `${spaces}  ${key}: ${stringValue}\n`;
   })
 );
-export default (data) => `{\n${stringify(data).join('')}}`;
+export default (data) => `{\n${format(data).join('\n')}\n}`;

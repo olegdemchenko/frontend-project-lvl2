@@ -23,5 +23,5 @@ test('testing main functionality', () => {
   expect(genDiff(getFilePath('before.yml'), getFilePath('after.ini'), 'json')).toBe(jsonTemplate);
 });
 test('testing empty files', () => {
-  expect(genDiff(getFilePath('emptyBefore.json'), getFilePath('emptyAfter.json'))).toBe('{\n}');
+  expect(genDiff(getFilePath('emptyBefore.json'), getFilePath('emptyAfter.json'))).toBe('{\n\n}');
 });

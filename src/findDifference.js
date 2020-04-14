@@ -7,23 +7,25 @@ const findDifference = (before, after) => (
   analyzeData(before, after).map((key) => {
     const bothObjects = _.isObject(before[key]) && _.isObject(after[key]);
     const props = { key };
-    const beforeValue = before[key];
-    const afterValue = after[key];
+    if (!_.has(before, key)) {
+      return { ...props, status: 'added', value: after[key] };
+    }
+
+    if (!_.has(after, key)) {
+      return { ...props, status: 'deleted', value: before[key] };
+    }
+
     if (bothObjects) {
-      return { ...props, status: 'tree', children: findDifference(before[key], after[key]) };
+      return { ...props, status: 'parent', children: findDifference(before[key], after[key]) };
     }
-    if (!beforeValue) {
-      return { ...props, status: 'added', value: afterValue };
-    }
-    if (!afterValue) {
-      return { ...props, status: 'deleted', value: beforeValue };
-    }
-    if (beforeValue !== afterValue) {
+
+    if (before[key] !== after[key]) {
       return {
-        ...props, status: 'changed', value: beforeValue, newValue: afterValue,
+        ...props, status: 'changed', value: before[key], newValue: after[key],
       };
     }
-    return { ...props, status: 'not changed', value: beforeValue };
+
+    return { ...props, status: 'not changed', value: before[key] };
   })
 );
 export default findDifference;
