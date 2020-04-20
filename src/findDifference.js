@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 const analyzeData = (before, after) => (
-  _.uniq([...Object.keys(before), ...Object.keys(after)]).sort()
+  _.union([...Object.keys(before), ...Object.keys(after)])
 );
 const findDifference = (before, after) => (
   analyzeData(before, after).map((key) => {
@@ -21,7 +21,7 @@ const findDifference = (before, after) => (
 
     if (before[key] !== after[key]) {
       return {
-        ...props, status: 'changed', value: before[key], newValue: after[key],
+        ...props, status: 'changed', oldValue: before[key], newValue: after[key],
       };
     }
 

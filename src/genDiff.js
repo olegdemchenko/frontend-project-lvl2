@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import findDifference from './findDifference';
-import convert from './converters';
+import convert from './parser';
 import format from './formatters';
 
 

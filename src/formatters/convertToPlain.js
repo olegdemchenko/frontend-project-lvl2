@@ -4,12 +4,12 @@ const toString = (arg) => (_.isObject(arg) ? '[complex value]' : `"${arg.toStrin
 
 const plain = (diff, path = '') => (
   diff.map(({
-    key, status, value, newValue, children,
+    key, status, value, oldValue, newValue, children,
   }) => {
     const fullPath = `${path}${key}`;
     switch (status) {
       case 'changed': {
-        return `Property "${fullPath}" was changed from ${toString(value)} to ${toString(newValue)}`;
+        return `Property "${fullPath}" was changed from ${toString(oldValue)} to ${toString(newValue)}`;
       }
       case 'added': {
         return `Property "${fullPath}" was added with value ${toString(value)}`;
@@ -18,11 +18,11 @@ const plain = (diff, path = '') => (
         return `Property "${fullPath}" was deleted`;
       }
       case 'not changed': {
-        return '';
+        return null;
       }
       case 'parent': {
         const newPath = `${fullPath}.`;
-        return `${plain(children, newPath).filter((str) => str !== '').join('\n')}`;
+        return plain(children, newPath);
       }
       default: {
         throw new Error(`Status ${status} is not supported`);
@@ -30,4 +30,4 @@ const plain = (diff, path = '') => (
     }
   })
 );
-export default (diff) => plain(diff).filter((str) => str !== '').join('\n');
+export default (diff) => plain(diff).flat(Infinity).filter((str) => str).join('\n');
