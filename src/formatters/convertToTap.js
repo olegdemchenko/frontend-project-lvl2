@@ -28,25 +28,20 @@ const format = (diff, depth = 1) => (
     const spaces = getSpaces(depth, backspace);
     const stringValue = stringify(value, depth);
     switch (status) {
-      case 'changed': {
+      case 'changed':
         return `${spaces}- ${key}: ${stringify(oldValue, depth)}\n${spaces}+ ${key}: ${stringify(newValue, depth)}`;
-      }
-      case 'added': {
+      case 'added':
         return `${spaces}+ ${key}: ${stringValue}`;
-      }
-      case 'deleted': {
+      case 'deleted':
         return `${spaces}- ${key}: ${stringValue}`;
-      }
-      case 'not changed': {
+      case 'not changed':
         return `${spaces}  ${key}: ${stringValue}`;
-      }
       case 'parent': {
         const childrenStr = format(children, depth + 1).join('\n');
         return `${spaces}  ${key}: {\n${childrenStr}\n${getSpaces(depth)}}`;
       }
-      default: {
+      default:
         throw new Error(`Status ${status} is not supported`);
-      }
     }
   })
 );

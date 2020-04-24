@@ -8,25 +8,20 @@ const plain = (diff, path = '') => (
   }) => {
     const fullPath = `${path}${key}`;
     switch (status) {
-      case 'changed': {
+      case 'changed':
         return `Property "${fullPath}" was changed from ${toString(oldValue)} to ${toString(newValue)}`;
-      }
-      case 'added': {
+      case 'added':
         return `Property "${fullPath}" was added with value ${toString(value)}`;
-      }
-      case 'deleted': {
+      case 'deleted':
         return `Property "${fullPath}" was deleted`;
-      }
-      case 'not changed': {
+      case 'not changed':
         return null;
-      }
       case 'parent': {
         const newPath = `${fullPath}.`;
         return plain(children, newPath);
       }
-      default: {
+      default:
         throw new Error(`Status ${status} is not supported`);
-      }
     }
   })
 );

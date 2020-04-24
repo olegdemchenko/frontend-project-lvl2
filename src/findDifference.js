@@ -1,10 +1,8 @@
 import _ from 'lodash';
 
-const analyzeData = (before, after) => (
-  _.union([...Object.keys(before), ...Object.keys(after)])
-);
-const findDifference = (before, after) => (
-  analyzeData(before, after).map((key) => {
+const findDifference = (before, after) => {
+  const keys = _.union(Object.keys(before), Object.keys(after));
+  return keys.map((key) => {
     const bothObjects = _.isObject(before[key]) && _.isObject(after[key]);
     const props = { key };
     if (!_.has(before, key)) {
@@ -26,6 +24,6 @@ const findDifference = (before, after) => (
     }
 
     return { ...props, status: 'not changed', value: before[key] };
-  })
-);
+  });
+};
 export default findDifference;
